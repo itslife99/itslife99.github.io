@@ -182,6 +182,12 @@ nav.main-nav a[aria-current="page"] {
 }
 .btn-primary:hover { background: var(--stamp-soft); }
 
+.btn-kakao {
+  background: #FEE500;
+  color: #191600;
+}
+.btn-kakao:hover { background: #FFEB4D; }
+
 .btn-ghost {
   background: transparent;
   color: var(--paper);
