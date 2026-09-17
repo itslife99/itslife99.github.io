@@ -307,8 +307,16 @@ section.alt { background: var(--paper-alt); }
 .process-step p { margin: 0; color: var(--ink-soft); }
 
 /* ---------- Pricing table ---------- */
+.table-scroll {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  margin: 0 -24px;
+  padding: 0 24px;
+}
+
 table.pricing {
   width: 100%;
+  min-width: 640px;
   border-collapse: collapse;
   font-size: 0.95rem;
   background: var(--white);
