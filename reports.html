@@ -79,31 +79,30 @@
 <script>
 /* =========================================================
    무료 리포트 자료실
-   - reports/reports.json 을 읽어 카드로 렌더링
-   - 날짜(date) 기준 내림차순(최신 우선) 정렬
+   - 데이터 출처: 구글시트 "이지웨이 무료 리포트 목록"
+     (직원은 이 시트에 한 줄만 추가하면 됩니다 — 깃허브 접속 불필요)
+   - 파일 출처: 구글드라이브 "이지웨이 무료 리포트 파일함" 폴더
+     (사진·PDF·엑셀을 이 폴더에 올리고, 생성된 공유 링크를 시트에 붙여넣기)
+   - 날짜(C열) 기준 내림차순(최신 우선) 정렬
    - 회원가입/로그인 없이 바로 다운로드
-   - URL의 UTM 파라미터(utm_source 등)를 다운로드/상담 링크에 그대로 전달
-     → 인스타/유튜브/틱톡/블로그 등 유입 경로별로 reports.html?utm_source=instagram
-       형태의 링크를 만들어 공유하면, 추후 애널리틱스를 연결했을 때 경로별 다운로드
-       추이를 구분할 수 있습니다.
+   - URL의 UTM 파라미터(utm_source 등)를 다운로드/상담 링크·클릭 이벤트에 전달
+     → 인스타/유튜브/틱톡/블로그마다 reports.html?utm_source=instagram 같은
+       링크를 따로 만들어 공유하면, 애널리틱스 연결 시 경로별 다운로드 추이를
+       구분할 수 있습니다.
 
    ---------------------------------------------------------
-   [리포트 추가 방법 — HTML 수정 없이 이 파일 하나만 편집]
-   1) reports/reports.json 에 아래 형식으로 항목을 추가
-      {
-        "id": "고유값-영문/숫자",
-        "title": "리포트 제목",
-        "description": "한 줄 설명",
-        "date": "YYYY-MM-DD",
-        "thumbnail": "reports/images/파일명.jpg",
-        "pdf": "reports/files/파일명.pdf",
-        "xlsx": "reports/files/파일명.xlsx"   (없으면 이 줄 전체 삭제)
-      }
-   2) 대표 사진은 reports/images/ 폴더에, PDF·엑셀은 reports/files/ 폴더에 업로드
-   3) 날짜만 맞으면 최신순 정렬은 자동으로 처리됩니다.
+   [리포트 추가 방법 — 코드 수정 없이 구글시트만 편집]
+   1) "이지웨이 무료 리포트 파일함" 구글드라이브 폴더에 대표 사진·PDF·
+      (있다면) 엑셀 파일을 업로드
+   2) 업로드한 파일마다 마우스 오른쪽 클릭 → 공유 → 링크 복사
+   3) "이지웨이 무료 리포트 목록" 구글시트에 새 줄 추가:
+      제목 / 설명 / 날짜(YYYY-MM-DD) / 대표사진 링크 / PDF 링크 / 엑셀 링크
+   4) 저장만 하면 1~2분 내로 이 페이지에 최신순으로 자동 반영됩니다.
    ========================================================= */
 
 (function () {
+  var SHEET_CSV_URL = 'https://docs.google.com/spreadsheets/d/17nruQhsCWvmppy1P25hBrAt0hZF8UG_g8SPpwdD4-MQ/export?format=csv&gid=0';
+
   var grid = document.getElementById('report-grid');
   var statusEl = document.getElementById('report-status');
 
@@ -112,42 +111,119 @@
     statusEl.textContent = msg;
   }
 
-  // 현재 페이지 URL의 utm_* 파라미터를 모아서 쿼리스트링으로 반환
-  function getUtmQuery() {
+  // 현재 페이지 URL의 utm_* 파라미터 모음
+  function getUtmParams() {
     var params = new URLSearchParams(window.location.search);
-    var out = new URLSearchParams();
+    var out = {};
     params.forEach(function (value, key) {
-      if (key.toLowerCase().indexOf('utm_') === 0) out.append(key, value);
+      if (key.toLowerCase().indexOf('utm_') === 0) out[key] = value;
     });
-    var qs = out.toString();
-    return qs ? qs : '';
+    return out;
   }
 
   function withUtm(url) {
-    var utm = getUtmQuery();
-    if (!utm) return url;
-    return url + (url.indexOf('?') > -1 ? '&' : '?') + utm;
+    var utm = getUtmParams();
+    var keys = Object.keys(utm);
+    if (!url || keys.length === 0) return url;
+    var out = new URLSearchParams();
+    keys.forEach(function (k) { out.append(k, utm[k]); });
+    return url + (url.indexOf('?') > -1 ? '&' : '?') + out.toString();
   }
 
   function formatDate(d) {
     if (!d) return '';
-    var parts = d.split('-');
+    var parts = d.trim().split('-');
     if (parts.length !== 3) return d;
     return parts[0] + '.' + parts[1] + '.' + parts[2];
+  }
+
+  // 구글드라이브 공유 링크(어떤 형태든)에서 파일 ID만 추출
+  function driveFileId(url) {
+    if (!url) return null;
+    var m = url.match(/\/d\/([a-zA-Z0-9_-]{15,})/) || url.match(/[?&]id=([a-zA-Z0-9_-]{15,})/);
+    return m ? m[1] : null;
+  }
+
+  function driveThumbnailUrl(url) {
+    var id = driveFileId(url);
+    return id ? ('https://drive.google.com/thumbnail?id=' + id + '&sz=w1000') : url;
+  }
+
+  function driveDownloadUrl(url) {
+    var id = driveFileId(url);
+    return id ? ('https://drive.google.com/uc?export=download&id=' + id) : url;
   }
 
   // 다운로드 클릭 로깅 훅.
   // 나중에 "다운로드 전 신청 폼(이름·연락처·제품)"으로 바꾸고 싶을 때는
   // 이 함수 안에서 모달을 띄우고, 제출 후에만 실제 다운로드가 일어나도록
   // return false; 로 기본 다운로드를 막은 뒤 처리하면 됩니다.
-  function onDownloadClick(reportId, fileType) {
+  function onDownloadClick(title, fileType) {
     if (window.gtag) {
-      window.gtag('event', 'file_download', {
-        report_id: reportId,
+      var utm = getUtmParams();
+      window.gtag('event', 'file_download', Object.assign({
+        report_title: title,
         file_type: fileType
-      });
+      }, utm));
     }
     return true;
+  }
+
+  // ---- 아주 단순한 CSV 파서 (따옴표/쉼표/줄바꿈 포함 셀 지원) ----
+  function parseCsv(text) {
+    var rows = [];
+    var row = [];
+    var field = '';
+    var inQuotes = false;
+    for (var i = 0; i < text.length; i++) {
+      var c = text[i];
+      if (inQuotes) {
+        if (c === '"') {
+          if (text[i + 1] === '"') { field += '"'; i++; }
+          else { inQuotes = false; }
+        } else {
+          field += c;
+        }
+      } else {
+        if (c === '"') { inQuotes = true; }
+        else if (c === ',') { row.push(field); field = ''; }
+        else if (c === '\n') { row.push(field); rows.push(row); row = []; field = ''; }
+        else if (c === '\r') { /* skip */ }
+        else { field += c; }
+      }
+    }
+    if (field.length > 0 || row.length > 0) { row.push(field); rows.push(row); }
+    return rows.filter(function (r) { return r.some(function (v) { return v !== ''; }); });
+  }
+
+  function findCol(header, keyword) {
+    for (var i = 0; i < header.length; i++) {
+      if (header[i].indexOf(keyword) > -1) return i;
+    }
+    return -1;
+  }
+
+  function rowsToReports(rows) {
+    if (rows.length < 2) return [];
+    var header = rows[0];
+    var col = {
+      title: findCol(header, '제목'),
+      description: findCol(header, '설명'),
+      date: findCol(header, '날짜'),
+      thumbnail: findCol(header, '사진'),
+      pdf: findCol(header, 'PDF'),
+      xlsx: findCol(header, '엑셀')
+    };
+    return rows.slice(1).map(function (r) {
+      return {
+        title: col.title > -1 ? r[col.title] : '',
+        description: col.description > -1 ? r[col.description] : '',
+        date: col.date > -1 ? r[col.date] : '',
+        thumbnail: col.thumbnail > -1 ? r[col.thumbnail] : '',
+        pdf: col.pdf > -1 ? r[col.pdf] : '',
+        xlsx: col.xlsx > -1 ? r[col.xlsx] : ''
+      };
+    }).filter(function (r) { return r.title; });
   }
 
   function renderCard(r) {
@@ -158,7 +234,7 @@
     thumbWrap.className = 'report-thumb';
     if (r.thumbnail) {
       var img = document.createElement('img');
-      img.src = r.thumbnail;
+      img.src = driveThumbnailUrl(r.thumbnail);
       img.alt = r.title || '';
       img.loading = 'lazy';
       thumbWrap.appendChild(img);
@@ -188,22 +264,23 @@
 
     if (r.pdf) {
       var pdfLink = document.createElement('a');
-      pdfLink.href = withUtm(r.pdf);
+      pdfLink.href = withUtm(driveDownloadUrl(r.pdf));
       pdfLink.className = 'btn btn-primary btn-sm';
       pdfLink.target = '_blank';
       pdfLink.rel = 'noopener';
       pdfLink.textContent = 'PDF 다운로드';
-      pdfLink.addEventListener('click', function () { onDownloadClick(r.id, 'pdf'); });
+      pdfLink.addEventListener('click', function () { onDownloadClick(r.title, 'pdf'); });
       actions.appendChild(pdfLink);
     }
 
     if (r.xlsx) {
       var xlsxLink = document.createElement('a');
-      xlsxLink.href = withUtm(r.xlsx);
+      xlsxLink.href = withUtm(driveDownloadUrl(r.xlsx));
       xlsxLink.className = 'btn btn-ghost-dark btn-sm';
-      xlsxLink.setAttribute('download', '');
+      xlsxLink.target = '_blank';
+      xlsxLink.rel = 'noopener';
       xlsxLink.textContent = '엑셀 다운로드';
-      xlsxLink.addEventListener('click', function () { onDownloadClick(r.id, 'xlsx'); });
+      xlsxLink.addEventListener('click', function () { onDownloadClick(r.title, 'xlsx'); });
       actions.appendChild(xlsxLink);
     }
 
@@ -221,13 +298,14 @@
     return card;
   }
 
-  fetch('reports/reports.json', { cache: 'no-store' })
+  fetch(SHEET_CSV_URL, { cache: 'no-store' })
     .then(function (res) {
-      if (!res.ok) throw new Error('reports.json 응답 오류');
-      return res.json();
+      if (!res.ok) throw new Error('구글시트 응답 오류');
+      return res.text();
     })
-    .then(function (list) {
-      if (!Array.isArray(list) || list.length === 0) {
+    .then(function (csvText) {
+      var list = rowsToReports(parseCsv(csvText));
+      if (list.length === 0) {
         showStatus('현재 등록된 리포트가 없습니다. 곧 새로운 자료를 올릴 예정입니다.');
         return;
       }
