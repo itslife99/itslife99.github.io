@@ -1,0 +1,20 @@
+[
+  {
+    "id": "sample-002",
+    "title": "반려동물 용품 중국 수입 체크리스트 (샘플)",
+    "description": "통관 서류, KC 인증 대상 확인법, 물류 방식별 리드타임을 정리한 예시 리포트입니다.",
+    "date": "2026-11-24",
+    "thumbnail": "reports/images/sample-002.jpg",
+    "pdf": "reports/files/sample-002.pdf",
+    "xlsx": "reports/files/sample-002.xlsx"
+  },
+  {
+    "id": "sample-001",
+    "title": "실리콘 주방용품 OEM 공장 비교 리포트 (샘플)",
+    "description": "최소발주수량(MOQ), 샘플 제작 기간, 품질검사 포인트를 비교한 예시 리포트입니다.",
+    "date": "2026-11-20",
+    "thumbnail": "reports/images/sample-001.jpg",
+    "pdf": "reports/files/sample-001.pdf",
+    "xlsx": "reports/files/sample-001.xlsx"
+  }
+]

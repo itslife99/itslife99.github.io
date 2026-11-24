@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>무료 리포트 자료실 | 이지웨이 중국무역</title>
+<meta name="description" content="이지웨이가 공개하는 중국 공장 조사·수입·OEM·ODM 관련 무료 리포트 자료실입니다. 회원가입 없이 누구나 PDF·엑셀 자료를 다운로드할 수 있습니다.">
+<link rel="icon" href="assets/favicon.png" type="image/png">
+<meta name="naver-site-verification" content="28a7c563643aefb58b962b238d9a97e0f471fe0b" />
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header class="site-header">
+  <div class="wrap">
+    <a href="index.html" class="brand"><img src="assets/logo-horizontal.png" alt="이지웨이 EASY WAY INTERNATIONAL TRADE" class="brand-logo"></a>
+    <nav class="main-nav" aria-label="주요 메뉴">
+      <ul>
+        <li><a href="index.html">홈</a></li>
+        <li><a href="about.html">회사소개</a></li>
+        <li><a href="services.html">서비스</a></li>
+        <li><a href="process.html">업무프로세스</a></li>
+        <li><a href="pricing.html">단가표</a></li>
+        <li><a href="terms.html">거래조건</a></li>
+        <li><a href="cases.html">진행사례</a></li>
+        <li><a href="reports.html" aria-current="page">무료 리포트</a></li>
+        <li><a href="contact.html">견적문의</a></li>
+      </ul>
+    </nav>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="wrap">
+    <span class="hero-eyebrow">FREE REPORT ARCHIVE</span>
+    <h1>중국 공장·수입 실무를<br>정리한 무료 리포트를<br>받아보세요.</h1>
+    <p class="lede">이지웨이가 현장에서 직접 조사한 공장 비교, 수입 체크리스트, 인증·검수 관련 자료를 무료로 공개합니다. 회원가입이나 개인정보 입력 없이 바로 다운로드할 수 있습니다.</p>
+    <div class="hero-actions">
+      <a href="https://open.kakao.com/o/sM7go6ge" class="btn btn-kakao" target="_blank" rel="noopener" data-kakao-link>카카오톡으로 OEM·수입대행 상담하기</a>
+      <a href="contact.html" class="btn btn-ghost">견적문의 하기</a>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="section-head">
+      <span class="section-num">01</span>
+      <h2>자료실</h2>
+    </div>
+    <p class="section-sub">최신 자료가 가장 위에 표시됩니다. 자료마다 PDF·엑셀 파일을 각각 다운로드할 수 있습니다.</p>
+
+    <div id="report-status" class="report-status" hidden></div>
+    <div id="report-grid" class="report-grid" aria-live="polite"></div>
+  </div>
+</section>
+
+<section class="alt">
+  <div class="wrap">
+    <div class="section-head">
+      <span class="section-num">02</span>
+      <h2>리포트와 비슷한 제품,<br>직접 소싱·생산하고 싶다면</h2>
+    </div>
+    <p class="section-sub">리포트에서 다룬 제품군과 유사한 공장 소싱, OEM·ODM 생산, 중국 수입대행이 필요하시면 편하게 상담해 주세요.</p>
+    <div class="hero-actions">
+      <a href="https://open.kakao.com/o/sM7go6ge" class="btn btn-kakao" target="_blank" rel="noopener" data-kakao-link>카카오톡 상담</a>
+      <a href="contact.html" class="btn btn-primary">견적문의 하기</a>
+    </div>
+  </div>
+</section>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <span>ⓒ 이지웨이. All rights reserved.</span>
+    <span>이지웨이 중국무역 · OEM·ODM 생산대행 · 공장조사</span>
+  </div>
+</footer>
+
+<script>
+/* =========================================================
+   무료 리포트 자료실
+   - reports/reports.json 을 읽어 카드로 렌더링
+   - 날짜(date) 기준 내림차순(최신 우선) 정렬
+   - 회원가입/로그인 없이 바로 다운로드
+   - URL의 UTM 파라미터(utm_source 등)를 다운로드/상담 링크에 그대로 전달
+     → 인스타/유튜브/틱톡/블로그 등 유입 경로별로 reports.html?utm_source=instagram
+       형태의 링크를 만들어 공유하면, 추후 애널리틱스를 연결했을 때 경로별 다운로드
+       추이를 구분할 수 있습니다.
+
+   ---------------------------------------------------------
+   [리포트 추가 방법 — HTML 수정 없이 이 파일 하나만 편집]
+   1) reports/reports.json 에 아래 형식으로 항목을 추가
+      {
+        "id": "고유값-영문/숫자",
+        "title": "리포트 제목",
+        "description": "한 줄 설명",
+        "date": "YYYY-MM-DD",
+        "thumbnail": "reports/images/파일명.jpg",
+        "pdf": "reports/files/파일명.pdf",
+        "xlsx": "reports/files/파일명.xlsx"   (없으면 이 줄 전체 삭제)
+      }
+   2) 대표 사진은 reports/images/ 폴더에, PDF·엑셀은 reports/files/ 폴더에 업로드
+   3) 날짜만 맞으면 최신순 정렬은 자동으로 처리됩니다.
+   ========================================================= */
+
+(function () {
+  var grid = document.getElementById('report-grid');
+  var statusEl = document.getElementById('report-status');
+
+  function showStatus(msg) {
+    statusEl.hidden = false;
+    statusEl.textContent = msg;
+  }
+
+  // 현재 페이지 URL의 utm_* 파라미터를 모아서 쿼리스트링으로 반환
+  function getUtmQuery() {
+    var params = new URLSearchParams(window.location.search);
+    var out = new URLSearchParams();
+    params.forEach(function (value, key) {
+      if (key.toLowerCase().indexOf('utm_') === 0) out.append(key, value);
+    });
+    var qs = out.toString();
+    return qs ? qs : '';
+  }
+
+  function withUtm(url) {
+    var utm = getUtmQuery();
+    if (!utm) return url;
+    return url + (url.indexOf('?') > -1 ? '&' : '?') + utm;
+  }
+
+  function formatDate(d) {
+    if (!d) return '';
+    var parts = d.split('-');
+    if (parts.length !== 3) return d;
+    return parts[0] + '.' + parts[1] + '.' + parts[2];
+  }
+
+  // 다운로드 클릭 로깅 훅.
+  // 나중에 "다운로드 전 신청 폼(이름·연락처·제품)"으로 바꾸고 싶을 때는
+  // 이 함수 안에서 모달을 띄우고, 제출 후에만 실제 다운로드가 일어나도록
+  // return false; 로 기본 다운로드를 막은 뒤 처리하면 됩니다.
+  function onDownloadClick(reportId, fileType) {
+    if (window.gtag) {
+      window.gtag('event', 'file_download', {
+        report_id: reportId,
+        file_type: fileType
+      });
+    }
+    return true;
+  }
+
+  function renderCard(r) {
+    var card = document.createElement('article');
+    card.className = 'report-card';
+
+    var thumbWrap = document.createElement('div');
+    thumbWrap.className = 'report-thumb';
+    if (r.thumbnail) {
+      var img = document.createElement('img');
+      img.src = r.thumbnail;
+      img.alt = r.title || '';
+      img.loading = 'lazy';
+      thumbWrap.appendChild(img);
+    }
+    card.appendChild(thumbWrap);
+
+    var body = document.createElement('div');
+    body.className = 'report-body';
+
+    var dateEl = document.createElement('span');
+    dateEl.className = 'report-date';
+    dateEl.textContent = formatDate(r.date);
+    body.appendChild(dateEl);
+
+    var h3 = document.createElement('h3');
+    h3.textContent = r.title || '제목 없음';
+    body.appendChild(h3);
+
+    if (r.description) {
+      var p = document.createElement('p');
+      p.textContent = r.description;
+      body.appendChild(p);
+    }
+
+    var actions = document.createElement('div');
+    actions.className = 'report-actions';
+
+    if (r.pdf) {
+      var pdfLink = document.createElement('a');
+      pdfLink.href = withUtm(r.pdf);
+      pdfLink.className = 'btn btn-primary btn-sm';
+      pdfLink.target = '_blank';
+      pdfLink.rel = 'noopener';
+      pdfLink.textContent = 'PDF 다운로드';
+      pdfLink.addEventListener('click', function () { onDownloadClick(r.id, 'pdf'); });
+      actions.appendChild(pdfLink);
+    }
+
+    if (r.xlsx) {
+      var xlsxLink = document.createElement('a');
+      xlsxLink.href = withUtm(r.xlsx);
+      xlsxLink.className = 'btn btn-ghost-dark btn-sm';
+      xlsxLink.setAttribute('download', '');
+      xlsxLink.textContent = '엑셀 다운로드';
+      xlsxLink.addEventListener('click', function () { onDownloadClick(r.id, 'xlsx'); });
+      actions.appendChild(xlsxLink);
+    }
+
+    body.appendChild(actions);
+
+    var kakao = document.createElement('a');
+    kakao.href = withUtm('https://open.kakao.com/o/sM7go6ge');
+    kakao.className = 'report-kakao-link';
+    kakao.target = '_blank';
+    kakao.rel = 'noopener';
+    kakao.textContent = '이 자료 관련 OEM·수입대행 상담하기 →';
+    body.appendChild(kakao);
+
+    card.appendChild(body);
+    return card;
+  }
+
+  fetch('reports/reports.json', { cache: 'no-store' })
+    .then(function (res) {
+      if (!res.ok) throw new Error('reports.json 응답 오류');
+      return res.json();
+    })
+    .then(function (list) {
+      if (!Array.isArray(list) || list.length === 0) {
+        showStatus('현재 등록된 리포트가 없습니다. 곧 새로운 자료를 올릴 예정입니다.');
+        return;
+      }
+      list.sort(function (a, b) {
+        return (b.date || '').localeCompare(a.date || '');
+      });
+      list.forEach(function (r) {
+        grid.appendChild(renderCard(r));
+      });
+    })
+    .catch(function (err) {
+      showStatus('자료 목록을 불러오지 못했습니다. 잠시 후 다시 시도해 주세요.');
+      console.error(err);
+    });
+
+  // 카카오 상담 버튼(상단/하단 CTA)에도 UTM 전달
+  document.querySelectorAll('[data-kakao-link]').forEach(function (a) {
+    a.href = withUtm(a.getAttribute('href'));
+  });
+})();
+</script>
+
+</body>
+</html>
