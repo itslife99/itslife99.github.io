@@ -82,7 +82,7 @@
    - 데이터 출처: 구글시트 "이지웨이 무료 리포트 목록"
      (직원은 이 시트에 한 줄만 추가하면 됩니다 — 깃허브 접속 불필요)
    - 파일 출처: 구글드라이브 "이지웨이 무료 리포트 파일함" 폴더
-     (사진·PDF·엑셀을 이 폴더에 올리고, 생성된 공유 링크를 시트에 붙여넣기)
+     (PDF·엑셀을 이 폴더에 올리고, 생성된 공유 링크를 시트에 붙여넣기)
    - 날짜(C열) 기준 내림차순(최신 우선) 정렬
    - 회원가입/로그인 없이 바로 다운로드
    - URL의 UTM 파라미터(utm_source 등)를 다운로드/상담 링크·클릭 이벤트에 전달
@@ -92,11 +92,11 @@
 
    ---------------------------------------------------------
    [리포트 추가 방법 — 코드 수정 없이 구글시트만 편집]
-   1) "이지웨이 무료 리포트 파일함" 구글드라이브 폴더에 대표 사진·PDF·
+   1) "이지웨이 무료 리포트 파일함" 구글드라이브 폴더에 PDF·
       (있다면) 엑셀 파일을 업로드
    2) 업로드한 파일마다 마우스 오른쪽 클릭 → 공유 → 링크 복사
    3) "이지웨이 무료 리포트 목록" 구글시트에 새 줄 추가:
-      제목 / 설명 / 날짜(YYYY-MM-DD) / 대표사진 링크 / PDF 링크 / 엑셀 링크
+      제목 / 설명 / 날짜(YYYY-MM-DD) / PDF 링크 / 엑셀 링크
    4) 저장만 하면 1~2분 내로 이 페이지에 최신순으로 자동 반영됩니다.
    ========================================================= */
 
@@ -130,9 +130,21 @@
     return url + (url.indexOf('?') > -1 ? '&' : '?') + out.toString();
   }
 
+  // 날짜를 YYYY-MM-DD 로 통일 (26-11-19 / 2026.11.19 / 2026/11/19 / 2026-1-9 등 모두 허용)
+  function normalizeDate(d) {
+    if (!d) return '';
+    var parts = d.trim().split(/[-./\s]+/).filter(Boolean);
+    if (parts.length !== 3) return d.trim();
+    var y = parts[0], m = parts[1], day = parts[2];
+    if (y.length === 2) y = '20' + y;
+    if (m.length === 1) m = '0' + m;
+    if (day.length === 1) day = '0' + day;
+    return y + '-' + m + '-' + day;
+  }
+
   function formatDate(d) {
     if (!d) return '';
-    var parts = d.trim().split('-');
+    var parts = d.split('-');
     if (parts.length !== 3) return d;
     return parts[0] + '.' + parts[1] + '.' + parts[2];
   }
@@ -142,11 +154,6 @@
     if (!url) return null;
     var m = url.match(/\/d\/([a-zA-Z0-9_-]{15,})/) || url.match(/[?&]id=([a-zA-Z0-9_-]{15,})/);
     return m ? m[1] : null;
-  }
-
-  function driveThumbnailUrl(url) {
-    var id = driveFileId(url);
-    return id ? ('https://drive.google.com/thumbnail?id=' + id + '&sz=w1000') : url;
   }
 
   function driveDownloadUrl(url) {
@@ -210,7 +217,6 @@
       title: findCol(header, '제목'),
       description: findCol(header, '설명'),
       date: findCol(header, '날짜'),
-      thumbnail: findCol(header, '사진'),
       pdf: findCol(header, 'PDF'),
       xlsx: findCol(header, '엑셀')
     };
@@ -218,8 +224,7 @@
       return {
         title: col.title > -1 ? r[col.title] : '',
         description: col.description > -1 ? r[col.description] : '',
-        date: col.date > -1 ? r[col.date] : '',
-        thumbnail: col.thumbnail > -1 ? r[col.thumbnail] : '',
+        date: col.date > -1 ? normalizeDate(r[col.date]) : '',
         pdf: col.pdf > -1 ? r[col.pdf] : '',
         xlsx: col.xlsx > -1 ? r[col.xlsx] : ''
       };
@@ -229,17 +234,6 @@
   function renderCard(r) {
     var card = document.createElement('article');
     card.className = 'report-card';
-
-    var thumbWrap = document.createElement('div');
-    thumbWrap.className = 'report-thumb';
-    if (r.thumbnail) {
-      var img = document.createElement('img');
-      img.src = driveThumbnailUrl(r.thumbnail);
-      img.alt = r.title || '';
-      img.loading = 'lazy';
-      thumbWrap.appendChild(img);
-    }
-    card.appendChild(thumbWrap);
 
     var body = document.createElement('div');
     body.className = 'report-body';

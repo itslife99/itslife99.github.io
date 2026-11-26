@@ -436,22 +436,9 @@ form.inquiry-form textarea { resize: vertical; min-height: 110px; }
 .report-card {
   background: var(--white);
   border: 1px solid var(--line);
+  border-top: 3px solid var(--stamp);
   display: flex;
   flex-direction: column;
-}
-
-.report-thumb {
-  aspect-ratio: 16 / 10;
-  background: var(--paper-alt);
-  overflow: hidden;
-  border-bottom: 3px solid var(--stamp);
-}
-
-.report-thumb img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  display: block;
 }
 
 .report-body {
